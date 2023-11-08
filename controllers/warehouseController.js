@@ -115,7 +115,17 @@ exports.updateWarehouse = async (req, res) => {
 };
 
 exports.deleteWarehouse = async (req, res) => {
-  const { warehouseId } = req.params; //Stores warehouse id in url
+  try {
+    const { warehouseId } = req.params;
 
-  //return 204 if success
+    const deletedWarehouse = await db("warehouses").where({ id: warehouseId }).delete();
+
+    if (deletedWarehouse === 0) {
+      return res.status(404).json({ message: "Warehouse not found" });
+    }
+
+    res.sendStatus(204);
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };

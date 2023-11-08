@@ -1,13 +1,36 @@
 // Warehouse controller functions go here
+const knex = require("knex");
+const knexConfig = require("../knexfile");
+const db = knex(knexConfig);
 
-export const getAllWarehouses = async (req, res) => {};
-
-export const getWarehouse = async (req, res) => {
-  const { warehouseId } = req.params; //Stores warehouse id in url
+exports.getAllWarehouses = async (_req, res) => {
+  try {
+    const data = await db("warehouses");
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(400).send({ error: err });
+  }
 };
 
-export const createWarehouse = async (req, res) => {
+exports.getWarehouse = async (req, res) => {
+  try {
+    const { warehouseId } = req.params;
+
+    const warehouse = await db("warehouses").where({ id: warehouseId }).first();
+
+    if (!warehouse) {
+      return res.status(404).json({ message: "Warehouse not found" });
+    }
+
+    return res.status(200).json(warehouse);
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.createWarehouse = async (req, res) => {
   //Checks all values are present in request
+
   for (const [key, val] of Object.entries(req.body)) {
     if (!val) {
       return res.status(400).json({
@@ -36,6 +59,7 @@ export const createWarehouse = async (req, res) => {
     "(",
     ")",
     " ",
+    "-",
   ];
   const convertedNumArr = req.body.contact_phone.split("");
 
@@ -59,22 +83,24 @@ export const createWarehouse = async (req, res) => {
   }
 
   //   All fields valid, create db entry
-  //warehouse returns array of size 1 with all props listed in returning() or []
+  //warehouse returns id
+  const warehouseId = await db("warehouses").insert(req.body);
   const warehouse = await db("warehouses")
-    .returning(
+    .select(
       "id",
       "warehouse_name",
       "city",
       "country",
       "contact_name",
       "contact_position",
-      "contact_phone",
-      "contact_email"
+      "contact_email",
+      "contact_phone"
     )
-    .insert(req.body);
+    .where({ id: warehouseId[0] })
+    .first();
 
-  if (warehouse.length === 1) {
-    return res.status(201).json(warehouse[0]);
+  if (warehouse) {
+    return res.status(201).json(warehouse);
   } else {
     return res.status(500).json({
       error:
@@ -84,11 +110,11 @@ export const createWarehouse = async (req, res) => {
   }
 };
 
-export const updateWarehouse = async (req, res) => {
+exports.updateWarehouse = async (req, res) => {
   const { warehouseId } = req.params; //Stores warehouse id in url
 };
 
-export const deleteWarehouse = async (req, res) => {
+exports.deleteWarehouse = async (req, res) => {
   const { warehouseId } = req.params; //Stores warehouse id in url
 
   //return 204 if success

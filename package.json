@@ -12,7 +12,7 @@
     "migrate": "knex migrate:latest",
     "migrate:down": "knex migrate:down",
     "rollback": "knex migrate:rollback",
-    "seed": "knex seed:run --specific=warehouse_seeds.js && knex seed:run --specific=inventory_seeds.js"
+    "seed": "knex seed:run"
   },
   "name": "in-stock",
   "version": "1.0.0",

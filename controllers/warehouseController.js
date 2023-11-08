@@ -120,11 +120,11 @@ exports.deleteWarehouse = async (req, res) => {
 
     const deletedWarehouse = await db("warehouses").where({ id: warehouseId }).delete();
 
-    if (!deletedWarehouse) {
+    if (deletedWarehouse === 0) {
       return res.status(404).json({ message: "Warehouse not found" });
     }
 
-    return res.status(204).json(warehouse);
+    res.sendStatus(204);
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
   }

@@ -18,7 +18,7 @@ exports.getWarehouse = async (req, res) => {
 
     const warehouse = await db("warehouses").where({ id: warehouseId }).first();
 
-    if (!warehouse) {
+    if (warehouse.length === 0) {
       return res.status(404).json({ message: "Warehouse not found" });
     }
 

@@ -2,10 +2,10 @@
 
 exports.getAllInventoryItems = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { warehouseId } = req.params; 
 
     const inventoryItems = await db('inventories')
-      .where({ warehouse_id: id });
+      .where({ warehouse_id: warehouseId });
 
     if (inventoryItems.length === 0) {
       return res.status(404).json({ message: 'No inventory items found for this warehouse' });
@@ -16,6 +16,7 @@ exports.getAllInventoryItems = async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 
 exports.getInventoryItem = async (req, res) => {

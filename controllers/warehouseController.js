@@ -3,7 +3,14 @@ const knex = require("knex");
 const knexConfig = require("../knexfile");
 const db = knex(knexConfig);
 
-exports.getAllWarehouses = async (_req, res) => {};
+exports.getAllWarehouses = async (_req, res) => {
+  try {
+    const warehouses = await db("warehouses");
+    res.status(200).json(warehouses);
+  } catch (err) {
+    res.status(400).send({ error: err });
+  }
+};
 
 exports.getWarehouse = async (req, res) => {
   try {

@@ -3,14 +3,7 @@ const knex = require("knex");
 const knexConfig = require("../knexfile");
 const db = knex(knexConfig);
 
-exports.getAllWarehouses = async (_req, res) => {
-  try {
-    const data = await db("warehouses");
-    res.status(200).json(data);
-  } catch (err) {
-    res.status(400).send({ error: err });
-  }
-};
+exports.getAllWarehouses = async (_req, res) => {};
 
 exports.getWarehouse = async (req, res) => {
   try {
@@ -18,7 +11,7 @@ exports.getWarehouse = async (req, res) => {
 
     const warehouse = await db("warehouses").where({ id: warehouseId }).first();
 
-    if (!warehouse) {
+    if (warehouse.length === 0) {
       return res.status(404).json({ message: "Warehouse not found" });
     }
 

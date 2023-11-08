@@ -1,6 +1,7 @@
 const express = require("express");
 const {
-  getAllInventoryItems,
+  getAllInventories,
+
   getInventoryItem,
   createInventoryItem,
   updateInventoryItem,
@@ -11,10 +12,11 @@ const router = express.Router();
 
 //Base url for this endpoint is /api/inventory
 
-router.get("/", getAllInventoryItems);
-router.get("/:warehouseId", getInventoryItem);
+router.get("/", getAllInventories);
+
+router.get("/:warehouseId/:itemId", getInventoryItem);
 router.post("/", createInventoryItem);
-router.put("/:warehouseId", updateInventoryItem);
-router.delete("/:warehouseId", deleteInventoryItem);
+router.put("/:warehouseId/:itemId", updateInventoryItem);
+router.delete("/:warehouseId/:itemId", deleteInventoryItem);
 
 module.exports = router;

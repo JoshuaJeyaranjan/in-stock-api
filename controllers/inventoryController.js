@@ -6,14 +6,15 @@ const db = knex(knexConfig);
 exports.getAllInventories = async (_req, res) => {
   try {
     const inventories = await db("inventories")
+    .join("warehouses", "inventories.warehouse_id", "warehouses.id")
     .select(
-      "id",
-      "warehouse_name",
-      "item_name",
-      "description",
-      "category",
-      "status",
-      "quantity",
+      "inventories.id",
+      "inventories.item_name",
+      "inventories.description",
+      "inventories.category",
+      "inventories.status",
+      "inventories.quantity",
+      "warehouses.warehouse_name"
     );
 
     if (inventories.length === 0) {

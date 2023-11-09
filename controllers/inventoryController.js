@@ -90,6 +90,43 @@ exports.getInventoryItem = async (req, res) => {
 
 exports.createInventoryItem = async (req, res) => {
   // return 201 if created
+  for (const [key, val] of Object.entries(req.body)) {
+    if (!val) {
+      return res.status(400).json({
+        message:
+          "Error creating warehouse in warehouseController:createWarehouse",
+        error: `Invalid ${key} input. Found ${val}`,
+      });
+    }
+  }
+
+  try {
+    const warehouse = await db("warehouses").where({ id: req.body.warehouse_id }).first()
+
+    if (!warehouse) {
+      return res.status(400).json({ message: "No warehouse found with that ID" })
+    }
+
+
+    const [itemId] = await db("inventories").insert(req.body)
+    const item = await db("inventories")
+      .select('id', 'item_name', 'description', 'category', 'status', 'quantity')
+      .where({ id: itemId }).first()
+
+    if (item) {
+      return res.status(201).json(item)
+    } else {
+      return res.status(400).json({
+        message: "Error creating item, Invalid input"
+      })
+    }
+
+
+
+  } catch (err) {
+    return res.status(500).json(err)
+  }
+
 };
 
 exports.updateInventoryItem = async (req, res) => {

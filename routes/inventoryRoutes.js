@@ -17,6 +17,6 @@ router.get("/", getAllInventories);
 router.get("/:itemId", getInventoryItem);
 router.post("/", createInventoryItem);
 router.put("/:warehouseId/:itemId", updateInventoryItem);
-router.delete("/:warehouseId/:itemId", deleteInventoryItem);
+router.delete("/:itemId", deleteInventoryItem);
 
 module.exports = router;

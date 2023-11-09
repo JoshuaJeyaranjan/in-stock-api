@@ -125,5 +125,17 @@ exports.updateInventoryItem = async (req, res) => {
 exports.deleteInventoryItem = async (req, res) => {
   const { itemId } = req.params; //Stores item id in url
 
+  try {
+    //returns number of deleted items
+    const deletedItems = await db("inventories").where({ id: itemId }).delete()
+
+    if (deletedItems) {
+      return res.sendStatus(204)
+    } else {
+      return res.status(404).json({ message: "Error, no item found with that id" })
+    }
+  } catch (err) {
+    return res.status(500).json({ error: err })
+  }
   //   return 204 if deleted
 };

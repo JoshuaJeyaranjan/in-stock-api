@@ -3,6 +3,11 @@ const knex = require("knex");
 const knexConfig = require("../knexfile");
 const db = knex(knexConfig);
 
+// * For updating a warehouse, we need to validate any fields that need
+// * to be updated. This might mean extracting the logic for validation
+// * out of createWarehouse so it can be applied in updateWarehouse
+// ! could be wrong, i'm tired writing this
+
 exports.getAllWarehouses = async (_req, res) => {
   try {
     const warehouses = await db("warehouses");
@@ -118,7 +123,9 @@ exports.deleteWarehouse = async (req, res) => {
   try {
     const { warehouseId } = req.params;
 
-    const deletedWarehouse = await db("warehouses").where({ id: warehouseId }).delete();
+    const deletedWarehouse = await db("warehouses")
+      .where({ id: warehouseId })
+      .delete();
 
     if (deletedWarehouse === 0) {
       return res.status(404).json({ message: "Warehouse not found" });

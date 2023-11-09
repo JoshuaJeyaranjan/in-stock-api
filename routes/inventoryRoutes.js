@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.get("/", getAllInventories);
 
-router.get("/:warehouseId/:itemId", getInventoryItem);
+router.get("/:itemId", getInventoryItem);
 router.post("/", createInventoryItem);
 router.put("/:warehouseId/:itemId", updateInventoryItem);
 router.delete("/:warehouseId/:itemId", deleteInventoryItem);

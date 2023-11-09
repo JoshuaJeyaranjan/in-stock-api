@@ -44,9 +44,7 @@ exports.createWarehouse = async (req, res) => {
     }
   }
 
-  console.log(!isValidPhone(req.body.contact_phone))
   if (!isValidPhone(req.body.contact_phone)) {
-    console.log('returning false?')
     return res.status(400).json({
       message: "Error creating warehouse. Invalid contact number",
       error: `Expected number in format: +1 (919) 797-2875 but got ${req.body.contact_phone}`,

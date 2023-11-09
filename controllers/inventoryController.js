@@ -6,23 +6,22 @@ const db = knex(knexConfig);
 exports.getAllInventories = async (_req, res) => {
   try {
     const inventories = await db("inventories")
-    .join("warehouses", "inventories.warehouse_id", "warehouses.id")
-    .select(
-      "inventories.id",
-      "inventories.item_name",
-      "inventories.description",
-      "inventories.category",
-      "inventories.status",
-      "inventories.quantity",
-      "warehouses.warehouse_name"
-    );
+      .join("warehouses", "inventories.warehouse_id", "warehouses.id")
+      .select(
+        "inventories.id",
+        "inventories.item_name",
+        "inventories.description",
+        "inventories.category",
+        "inventories.status",
+        "inventories.quantity",
+        "warehouses.warehouse_name"
+      );
 
     if (inventories.length === 0) {
       return res.status(404).json({ message: "No inventories found" });
     }
 
     return res.status(200).json(inventories);
-
   } catch (error) {
     console.error("Error fetching inventories:", error);
     return res.status(500).json({ error: error });
@@ -53,31 +52,39 @@ exports.getInventoryItems = async (req, res) => {
 
 exports.getInventoryItem = async (req, res) => {
   const { itemId } = req.params; //Stores item id in url
-  
+
   try {
-     const item = await db("inventories")
-      .join('warehouses', 'inventories.warehouse_id', '=', 'warehouses.id')
-      .select('inventories.id', 'warehouse_name', 'item_name', 'description', 'category', 'status', 'quantity')
-      .where({'inventories.id': itemId})
-      .first()
+    const item = await db("inventories")
+      .join("warehouses", "inventories.warehouse_id", "=", "warehouses.id")
+      .select(
+        "inventories.id",
+        "warehouse_name",
+        "item_name",
+        "description",
+        "category",
+        "status",
+        "quantity"
+      )
+      .where({ "inventories.id": itemId })
+      .first();
 
     if (!item) {
-      return res.status(400).json({message: "No item found with that id"})
+      return res.status(400).json({ message: "No item found with that id" });
     } else {
-        const responseItem = {
-          id: item.id,
-          warehouse_name: item.warehouse_name,
-          item_name: item.item_name,
-          description: item.description,
-          category: item.category,
-          status: item.status,
-          quantity: item.quantity,
-        };
+      const responseItem = {
+        id: item.id,
+        warehouse_name: item.warehouse_name,
+        item_name: item.item_name,
+        description: item.description,
+        category: item.category,
+        status: item.status,
+        quantity: item.quantity,
+      };
 
-       return res.status(200).json(responseItem)
+      return res.status(200).json(responseItem);
     }
-    } catch (err) {
-      return res.status(500).json(err)
+  } catch (err) {
+    return res.status(500).json(err);
   }
 };
 
@@ -87,6 +94,22 @@ exports.createInventoryItem = async (req, res) => {
 
 exports.updateInventoryItem = async (req, res) => {
   const { itemId } = req.params; //Stores item id in url
+
+  try {
+    const inventoryItem = await db("inventories").where({ id: itemId });
+
+    if (!inventoryItem) {
+      res
+        .status(404)
+        .send({ message: `No inventory item with ID ${itemId} found` });
+    }
+
+    await db("inventory").where({ id: warehouseId }).update(req.body);
+
+    res.status(200).send(updatedWarehouse);
+  } catch (error) {
+    res.status(400).send({ message: error.sqlMessage });
+  }
 };
 
 exports.deleteInventoryItem = async (req, res) => {

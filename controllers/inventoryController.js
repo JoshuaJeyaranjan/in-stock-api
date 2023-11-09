@@ -24,7 +24,7 @@ exports.getAllInventories = async (_req, res) => {
 
   } catch (error) {
     console.error("Error fetching inventories:", error);
-    return res.status(500).json({ error: err });
+    return res.status(500).json({ error: error });
   }
 };
 
@@ -46,13 +46,38 @@ exports.getInventoryItems = async (req, res) => {
 
     return res.status(200).json(inventoryItems);
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: error });
   }
 };
 
 exports.getInventoryItem = async (req, res) => {
   const { itemId } = req.params; //Stores item id in url
+  
+  try {
+     const item = await db("inventories")
+      .join('warehouses', 'inventories.warehouse_id', '=', 'warehouses.id')
+      .select('inventories.id', 'warehouse_name', 'item_name', 'description', 'category', 'status', 'quantity')
+      .where({'inventories.id': itemId})
+      .first()
+
+    if (!item) {
+      return res.status(400).json({message: "No item found with that id"})
+    } else {
+        const responseItem = {
+          id: item.id,
+          warehouse_name: item.warehouse_name,
+          item_name: item.item_name,
+          description: item.description,
+          category: item.category,
+          status: item.status,
+          quantity: item.quantity,
+        };
+
+       return res.status(200).json(responseItem)
+    }
+    } catch (err) {
+      return res.status(500).json(err)
+  }
 };
 
 exports.createInventoryItem = async (req, res) => {

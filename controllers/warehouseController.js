@@ -3,6 +3,57 @@ const knex = require("knex");
 const knexConfig = require("../knexfile");
 const db = knex(knexConfig);
 
+
+
+const isValidEmail = (inputEmail) => {
+  //Validates contact email
+  console.log(inputEmail)
+  const convertedEmailArr = inputEmail.split("");
+  if (!convertedEmailArr.includes("@")) {
+    return false
+  } else {
+    return true
+  }
+}
+
+
+const isValidPhone = (numInput) => {
+  // Validates contact number
+  //   number must be in the form of: +1 (919) 797-2875
+  //Returns 400 status if any given char in contact_number is not in the valid array of chars
+  const validChars = [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "+",
+    "(",
+    ")",
+    " ",
+    "-",
+  ];
+  let output = true;
+  const convertedNumArr = numInput.split("");
+  console.log(convertedNumArr)
+
+  convertedNumArr.forEach((char) => {
+    if (!validChars.includes(char)) {
+      console.log(validChars.includes(char), char)
+      output = false
+    }
+
+  })
+  return output
+
+}
+
+
 exports.getAllWarehouses = async (_req, res) => {
   try {
     const warehouses = await db("warehouses");
@@ -41,40 +92,17 @@ exports.createWarehouse = async (req, res) => {
     }
   }
 
-  // Validates contact number
-  //   number must be in the form of: +1 (919) 797-2875
-  //Returns 400 status if any given char in contact_number is not in the valid array of chars
-  const validChars = [
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "+",
-    "(",
-    ")",
-    " ",
-    "-",
-  ];
-  const convertedNumArr = req.body.contact_phone.split("");
-
-  convertedNumArr.forEach((char) => {
-    if (!validChars.includes(char)) {
-      return res.status(400).json({
-        message: "Error creating warehouse. Invalid contact number",
-        error: `Expected number in format: +1 (919) 797-2875 but got ${req.body.contact_phone}`,
-      });
-    }
-  });
+  console.log(!isValidPhone(req.body.contact_phone))
+  if (!isValidPhone(req.body.contact_phone)) {
+    console.log('returning false?')
+    return res.status(400).json({
+      message: "Error creating warehouse. Invalid contact number",
+      error: `Expected number in format: +1 (919) 797-2875 but got ${req.body.contact_phone}`,
+    });
+  }
 
   //Validates contact email
-  const convertedEmailArr = req.body.contact_email.split("");
-  if (!convertedEmailArr.includes("@")) {
+  if (!isValidEmail(req.body.contact_email)) {
     return res.status(400).json({
       message:
         "Error creating warehouse in warehouseController:createWarehouse",
@@ -110,8 +138,23 @@ exports.createWarehouse = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
 exports.updateWarehouse = async (req, res) => {
   const { warehouseId } = req.params;
+
+  if (req.body.contact_phone && !isValidPhone(req.body.contact_phone)) {
+    return res.status(400).json({ message: "Invalid contact number input" })
+  }
+
+  if (req.body.contact_email && !isValidEmail(req.body.contact_email)) {
+    return res.status(400).json({ message: "Invalid contact email input" })
+
+  }
 
   try {
     const warehouse = await db("warehouses")

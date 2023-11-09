@@ -94,21 +94,32 @@ exports.createInventoryItem = async (req, res) => {
 
 exports.updateInventoryItem = async (req, res) => {
   const { itemId } = req.params; //Stores item id in url
-
+  if (req.body.status) {
+    console.log(req.body.status === "Out of stock");
+    if (req.body.status !== "Out of stock" && req.body.status !== "In stock") {
+      return res.status(400).send({
+        message: "Please ensure the status is in the correct format",
+      });
+    }
+  }
   try {
-    const inventoryItem = await db("inventories").where({ id: itemId });
+    const rowsUpdated = await db("inventories")
+      .where({ id: itemId })
+      .update(req.body); // returns the number of rows affected
 
-    if (!inventoryItem) {
-      res
-        .status(404)
-        .send({ message: `No inventory item with ID ${itemId} found` });
+    if (rowsUpdated === 0) {
+      return res
+        .status(400)
+        .json({ message: `Inventory item with ID ${itemId} not found` });
     }
 
-    await db("inventory").where({ id: warehouseId }).update(req.body);
+    const updatedData = await db("inventories").where({ id: itemId }).first();
 
-    res.status(200).send(updatedWarehouse);
+    res.json(updatedData);
   } catch (error) {
-    res.status(400).send({ message: error.sqlMessage });
+    res.status(500).json({
+      message: `Unable to update inventory item with ID ${itemId}: ${error}`,
+    });
   }
 };
 

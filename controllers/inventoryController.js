@@ -95,7 +95,6 @@ exports.createInventoryItem = async (req, res) => {
 exports.updateInventoryItem = async (req, res) => {
   const { itemId } = req.params; //Stores item id in url
   if (req.body.status) {
-    console.log(req.body.status === "Out of stock");
     if (req.body.status !== "Out of stock" && req.body.status !== "In stock") {
       return res.status(400).send({
         message: "Please ensure the status is in the correct format",

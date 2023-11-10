@@ -18,14 +18,15 @@ exports.getAllInventories = async (req, res) => {
       .orWhereILike("inventories.item_name", `%${searchTerm}%`)
       .orWhereILike("inventories.category", `%${searchTerm}%`)
 
-
     if (inventoryResults.length === 0) {
       return res.sendStatus(204) //No content
     } else {
       return res.status(200).json(inventoryResults)
 
     }
+
   } else {
+
     try {
       const inventories = await db("inventories")
         .join("warehouses", "inventories.warehouse_id", "warehouses.id")
@@ -49,7 +50,6 @@ exports.getAllInventories = async (req, res) => {
       return res.status(500).json({ error: error });
     }
   }
-
 };
 
 exports.getInventoryItems = async (req, res) => {

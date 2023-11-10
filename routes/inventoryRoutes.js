@@ -11,7 +11,7 @@ const {
 
 const router = express.Router();
 
-//Base url for this endpoint is /api/inventory
+// Base url for this endpoint is /api/inventory
 
 router.get("/", getAllInventories);
 

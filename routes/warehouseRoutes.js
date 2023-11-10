@@ -14,7 +14,7 @@ const router = express.Router();
 
 //Base url for this endpoint is /api/warehouses
 
-router.get("/:warehouseId/inventories", getInventoryItems);
+router.get("/:warehouseId/inventory", getInventoryItems);
 
 router.get("/", getAllWarehouses);
 router.get("/:warehouseId", getWarehouse);

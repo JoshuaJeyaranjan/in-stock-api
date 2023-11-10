@@ -4,28 +4,65 @@ const knexConfig = require("../knexfile");
 const db = knex(knexConfig);
 const { isValidEmail, isValidPhone } = require("./validation");
 
-exports.getAllWarehouses = async (_req, res) => {
-  try {
-    const warehouses = await db("warehouses");
-    res.status(200).json(warehouses);
-  } catch (err) {
-    res.status(400).send({ error: err });
+exports.getAllWarehouses = async (req, res) => {
+  const searchTerm = req.query.s;
+
+  if (searchTerm) {
+    try {
+      const warehouseResults = await db("warehouses")
+        .select(
+          "id",
+          "warehouse_name",
+          "city",
+          "country",
+          "contact_name",
+          "contact_position",
+          "contact_email",
+          "contact_phone"
+        )
+        .whereILike('warehouse_name', `%${searchTerm}%`)
+        .orWhereILike('city', `%${searchTerm}%`)
+        .orWhereILike('country', `%${searchTerm}%`)
+        .orWhereILike('contact_name', `%${searchTerm}%`)
+        .orWhereILike('contact_email', `%${searchTerm}%`)
+        .orWhereILike('contact_phone', `%${searchTerm}%`)
+
+      if (warehouseResults.length === 0) {
+        return res.sendStatus(204) //No content
+      } else {
+        return res.status(200).json(warehouseResults)
+      }
+
+    } catch (err) {
+      return res.status(500).json({ error: err })
+    }
+  } else {
+    try {
+      const warehouses = await db("warehouses");
+      res.status(200).json(warehouses);
+    } catch (err) {
+      res.status(400).send({ error: err });
+    }
   }
+
+
 };
 
 exports.getWarehouse = async (req, res) => {
   try {
     const { warehouseId } = req.params;
 
-    const warehouse = await db("warehouses").where({ id: warehouseId }).first();
+    const warehouse = await db("warehouses")
+      .select('id', 'warehouse_name', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email')
+      .where({ id: warehouseId }).first();
 
-    if (warehouse.length === 0) {
+    if (!warehouse) {
       return res.status(404).json({ message: "Warehouse not found" });
     }
 
     return res.status(200).json(warehouse);
   } catch (error) {
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: err });
   }
 };
 

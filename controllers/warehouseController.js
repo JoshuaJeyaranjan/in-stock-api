@@ -8,7 +8,8 @@ const { isValidEmail, isValidPhone } = require('./validation')
 
 exports.getAllWarehouses = async (_req, res) => {
   try {
-    const warehouses = await db("warehouses");
+    const warehouses = await db("warehouses")
+      .select('id', 'warehouse_name', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email');
     res.status(200).json(warehouses);
   } catch (err) {
     res.status(400).send({ error: err });

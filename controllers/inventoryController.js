@@ -54,7 +54,7 @@ exports.getInventoryItems = async (req, res) => {
     const { warehouseId } = req.params;
 
     const inventoryItems = await db("inventories")
-      .select("id", "item_name", "category", "status", "quantity")
+      .select("id", "item_name", "category", "status", "quantity", "warehouse_id")
       .where({
         warehouse_id: warehouseId,
       });

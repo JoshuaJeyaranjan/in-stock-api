@@ -128,7 +128,6 @@ exports.createInventoryItem = async (req, res) => {
       return res.status(400).json({ message: "No warehouse found with that ID" })
     }
 
-
     const [itemId] = await db("inventories").insert(req.body)
     const item = await db("inventories")
       .select('id', 'item_name', 'description', 'category', 'status', 'quantity')

@@ -54,15 +54,17 @@ exports.getWarehouse = async (req, res) => {
   try {
     const { warehouseId } = req.params;
 
-    const warehouse = await db("warehouses").where({ id: warehouseId }).first();
+    const warehouse = await db("warehouses")
+      .select('id', 'warehouse_name', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email')
+      .where({ id: warehouseId }).first();
 
-    if (warehouse.length === 0) {
+    if (!warehouse) {
       return res.status(404).json({ message: "Warehouse not found" });
     }
 
     return res.status(200).json(warehouse);
   } catch (error) {
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: err });
   }
 };
 

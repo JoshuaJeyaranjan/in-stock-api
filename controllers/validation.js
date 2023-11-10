@@ -1,13 +1,26 @@
 exports.isValidEmail = (inputEmail) => {
   //Validates contact email
+  const validDomains = [
+    '.com',
+    '.ca',
+    '.io',
+    '.net',
+    '.ai',
+
+  ]
   const convertedEmailArr = inputEmail.split("");
   if (!convertedEmailArr.includes("@")) {
     return false
   } else {
-    return true
+    for (let i = 0; i < validDomains.length; index++) {
+      if (inputEmail.endsWith(validDomains[i])) {
+        return true
+      }
+      continue;
+    }
+    return false
   }
 }
-
 
 exports.isValidPhone = (numInput) => {
   // Validates contact number
@@ -40,7 +53,6 @@ exports.isValidPhone = (numInput) => {
 
   })
   return output
-
 }
 
 

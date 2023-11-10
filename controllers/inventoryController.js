@@ -22,11 +22,8 @@ exports.getAllInventories = async (req, res) => {
       return res.sendStatus(204) //No content
     } else {
       return res.status(200).json(inventoryResults)
-
     }
-
   } else {
-
     try {
       const inventories = await db("inventories")
         .join("warehouses", "inventories.warehouse_id", "warehouses.id")
@@ -57,7 +54,7 @@ exports.getInventoryItems = async (req, res) => {
     const { warehouseId } = req.params;
 
     const inventoryItems = await db("inventories")
-      .select("id", "item_name", "category", "status", "quantity")
+      .select("id", "item_name", "category", "status", "quantity", "warehouse_id")
       .where({
         warehouse_id: warehouseId,
       });
@@ -130,7 +127,6 @@ exports.createInventoryItem = async (req, res) => {
     if (!warehouse) {
       return res.status(400).json({ message: "No warehouse found with that ID" })
     }
-
 
     const [itemId] = await db("inventories").insert(req.body)
     const item = await db("inventories")

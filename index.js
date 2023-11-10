@@ -4,6 +4,7 @@ const cors = require("cors");
 
 const warehouseRoutes = require("./routes/warehouseRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
+const { search } = require('./controllers/searchController')
 
 const PORT = process.env.PORT;
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use("/api/warehouses", warehouseRoutes);
 app.use("/api/inventory", inventoryRoutes);
+app.get("/api/search", search)
 
 app.listen(PORT, () => {
   console.log(`Server Started on http://localhost:${PORT}`);

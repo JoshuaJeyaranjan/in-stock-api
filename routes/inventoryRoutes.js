@@ -13,7 +13,6 @@ const router = express.Router();
 //Base url for this endpoint is /api/inventory
 
 router.get("/", getAllInventories);
-
 router.get("/:itemId", getInventoryItem);
 router.post("/", createInventoryItem);
 router.put("/:warehouseId/:itemId", updateInventoryItem);

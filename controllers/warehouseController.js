@@ -2,9 +2,7 @@
 const knex = require("knex");
 const knexConfig = require("../knexfile");
 const db = knex(knexConfig);
-const { isValidEmail, isValidPhone } = require('./validation')
-
-
+const { isValidEmail, isValidPhone } = require("./validation");
 
 exports.getAllWarehouses = async (_req, res) => {
   try {
@@ -88,22 +86,15 @@ exports.createWarehouse = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
 exports.updateWarehouse = async (req, res) => {
   const { warehouseId } = req.params;
 
   if (req.body.contact_phone && !isValidPhone(req.body.contact_phone)) {
-    return res.status(400).json({ message: "Invalid contact number input" })
+    return res.status(400).json({ message: "Invalid contact number input" });
   }
 
   if (req.body.contact_email && !isValidEmail(req.body.contact_email)) {
-    return res.status(400).json({ message: "Invalid contact email input" })
-
+    return res.status(400).json({ message: "Invalid contact email input" });
   }
 
   try {
@@ -137,5 +128,20 @@ exports.deleteWarehouse = async (req, res) => {
     res.sendStatus(204);
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getWarehouseNames = async (_req, res) => {
+  try {
+    const warehouseNames = await db
+      .distinct()
+      .from("warehouses")
+      .pluck("warehouse_name");
+
+    res.send(warehouseNames);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "Couldn't fetch warehouse names from table." });
   }
 };

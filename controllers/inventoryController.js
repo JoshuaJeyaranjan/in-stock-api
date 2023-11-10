@@ -101,32 +101,39 @@ exports.createInventoryItem = async (req, res) => {
   }
 
   try {
-    const warehouse = await db("warehouses").where({ id: req.body.warehouse_id }).first()
+    const warehouse = await db("warehouses")
+      .where({ id: req.body.warehouse_id })
+      .first();
 
     if (!warehouse) {
-      return res.status(400).json({ message: "No warehouse found with that ID" })
+      return res
+        .status(400)
+        .json({ message: "No warehouse found with that ID" });
     }
 
-
-    const [itemId] = await db("inventories").insert(req.body)
+    const [itemId] = await db("inventories").insert(req.body);
     const item = await db("inventories")
-      .select('id', 'item_name', 'description', 'category', 'status', 'quantity')
-      .where({ id: itemId }).first()
+      .select(
+        "id",
+        "item_name",
+        "description",
+        "category",
+        "status",
+        "quantity"
+      )
+      .where({ id: itemId })
+      .first();
 
     if (item) {
-      return res.status(201).json(item)
+      return res.status(201).json(item);
     } else {
       return res.status(400).json({
-        message: "Error creating item, Invalid input"
-      })
+        message: "Error creating item, Invalid input",
+      });
     }
-
-
-
   } catch (err) {
-    return res.status(500).json(err)
+    return res.status(500).json(err);
   }
-
 };
 
 exports.updateInventoryItem = async (req, res) => {
@@ -164,15 +171,30 @@ exports.deleteInventoryItem = async (req, res) => {
 
   try {
     //returns number of deleted items
-    const deletedItems = await db("inventories").where({ id: itemId }).delete()
+    const deletedItems = await db("inventories").where({ id: itemId }).delete();
 
     if (deletedItems) {
-      return res.sendStatus(204)
+      return res.sendStatus(204);
     } else {
-      return res.status(404).json({ message: "Error, no item found with that id" })
+      return res
+        .status(404)
+        .json({ message: "Error, no item found with that id" });
     }
   } catch (err) {
-    return res.status(500).json({ error: err })
+    return res.status(500).json({ error: err });
   }
   //   return 204 if deleted
+};
+
+exports.getCategories = async (_req, res) => {
+  try {
+    const categories = await db
+      .distinct()
+      .from("inventories")
+      .pluck("category");
+
+    res.send(categories);
+  } catch (error) {
+    res.status(500).send({ message: "Couldn't fetch categories from table." });
+  }
 };

@@ -6,6 +6,7 @@ const {
   createInventoryItem,
   updateInventoryItem,
   deleteInventoryItem,
+  getCategories,
 } = require("../controllers/inventoryController");
 
 const router = express.Router();
@@ -18,5 +19,7 @@ router.get("/:itemId", getInventoryItem);
 router.post("/", createInventoryItem);
 router.put("/:warehouseId/:itemId", updateInventoryItem);
 router.delete("/:itemId", deleteInventoryItem);
+
+router.get("/categories/distinct", getCategories);
 
 module.exports = router;

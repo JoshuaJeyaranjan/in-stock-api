@@ -3,28 +3,52 @@ const knex = require("knex");
 const knexConfig = require("../knexfile");
 const db = knex(knexConfig);
 
-exports.getAllInventories = async (_req, res) => {
-  try {
-    const inventories = await db("inventories")
-      .join("warehouses", "inventories.warehouse_id", "warehouses.id")
+exports.getAllInventories = async (req, res) => {
+  const searchTerm = req.query.s
+  if (searchTerm) {
+    const inventoryResults = await db("inventories").join("warehouses", "inventories.warehouse_id", "=", "warehouses.id")
       .select(
-        "inventories.id",
-        "inventories.item_name",
-        "inventories.description",
-        "inventories.category",
-        "inventories.status",
-        "inventories.quantity",
-        "warehouses.warehouse_name"
-      );
+        "warehouse_name",
+        "item_name",
+        "description",
+        "category",
+        "status",
+      )
+      .whereILike("warehouses.warehouse_name", `%${searchTerm}%`)
+      .orWhereILike("inventories.item_name", `%${searchTerm}%`)
+      .orWhereILike("inventories.category", `%${searchTerm}%`)
 
-    if (inventories.length === 0) {
-      return res.status(404).json({ message: "No inventories found" });
+    if (inventoryResults.length === 0) {
+      return res.sendStatus(204) //No content
+    } else {
+      return res.status(200).json(inventoryResults)
+
     }
 
-    return res.status(200).json(inventories);
-  } catch (error) {
-    console.error("Error fetching inventories:", error);
-    return res.status(500).json({ error: error });
+  } else {
+
+    try {
+      const inventories = await db("inventories")
+        .join("warehouses", "inventories.warehouse_id", "warehouses.id")
+        .select(
+          "inventories.id",
+          "inventories.item_name",
+          "inventories.description",
+          "inventories.category",
+          "inventories.status",
+          "inventories.quantity",
+          "warehouses.warehouse_name"
+        );
+
+      if (inventories.length === 0) {
+        return res.status(404).json({ message: "No inventories found" });
+      }
+
+      return res.status(200).json(inventories);
+    } catch (error) {
+      console.error("Error fetching inventories:", error);
+      return res.status(500).json({ error: error });
+    }
   }
 };
 

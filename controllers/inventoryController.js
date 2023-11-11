@@ -88,6 +88,7 @@ exports.getInventoryItem = async (req, res) => {
       .select(
         "inventories.id",
         "warehouse_name",
+        "warehouse_id",
         "item_name",
         "description",
         "category",
@@ -102,6 +103,7 @@ exports.getInventoryItem = async (req, res) => {
     } else {
       const responseItem = {
         id: item.id,
+        warehouse_id: item.warehouse_id,
         warehouse_name: item.warehouse_name,
         item_name: item.item_name,
         description: item.description,
@@ -169,12 +171,13 @@ exports.createInventoryItem = async (req, res) => {
 exports.updateInventoryItem = async (req, res) => {
   const { itemId } = req.params; //Stores item id in url
   if (req.body.status) {
-    if (req.body.status !== "Out of stock" && req.body.status !== "In stock") {
+    if (req.body.status !== "Out of stock" && req.body.status !== "In Stock") {
       return res.status(400).send({
         message: "Please ensure the status is in the correct format",
       });
     }
   }
+
   try {
     const rowsUpdated = await db("inventories")
       .where({ id: itemId })

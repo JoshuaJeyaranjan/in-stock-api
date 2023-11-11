@@ -20,21 +20,20 @@ exports.getAllWarehouses = async (req, res) => {
           "contact_email",
           "contact_phone"
         )
-        .whereILike('warehouse_name', `%${searchTerm}%`)
-        .orWhereILike('city', `%${searchTerm}%`)
-        .orWhereILike('country', `%${searchTerm}%`)
-        .orWhereILike('contact_name', `%${searchTerm}%`)
-        .orWhereILike('contact_email', `%${searchTerm}%`)
-        .orWhereILike('contact_phone', `%${searchTerm}%`)
+        .whereILike("warehouse_name", `%${searchTerm}%`)
+        .orWhereILike("city", `%${searchTerm}%`)
+        .orWhereILike("country", `%${searchTerm}%`)
+        .orWhereILike("contact_name", `%${searchTerm}%`)
+        .orWhereILike("contact_email", `%${searchTerm}%`)
+        .orWhereILike("contact_phone", `%${searchTerm}%`);
 
       if (warehouseResults.length === 0) {
-        return res.sendStatus(204) //No content
+        return res.sendStatus(204); //No content
       } else {
-        return res.status(200).json(warehouseResults)
+        return res.status(200).json(warehouseResults);
       }
-
     } catch (err) {
-      return res.status(500).json({ error: err })
+      return res.status(500).json({ error: err });
     }
   } else {
     try {
@@ -44,8 +43,6 @@ exports.getAllWarehouses = async (req, res) => {
       res.status(400).send({ error: err });
     }
   }
-
-
 };
 
 exports.getWarehouse = async (req, res) => {
@@ -53,8 +50,18 @@ exports.getWarehouse = async (req, res) => {
     const { warehouseId } = req.params;
 
     const warehouse = await db("warehouses")
-      .select('id', 'warehouse_name', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email')
-      .where({ id: warehouseId }).first();
+      .select(
+        "id",
+        "warehouse_name",
+        "city",
+        "country",
+        "contact_name",
+        "contact_position",
+        "contact_phone",
+        "contact_email"
+      )
+      .where({ id: warehouseId })
+      .first();
 
     if (!warehouse) {
       return res.status(404).json({ message: "Warehouse not found" });
@@ -173,7 +180,7 @@ exports.getWarehouseNames = async (_req, res) => {
     const warehouseNames = await db
       .distinct()
       .from("warehouses")
-      .pluck("warehouse_name");
+      .select("id", "warehouse_name");
 
     res.send(warehouseNames);
   } catch (error) {

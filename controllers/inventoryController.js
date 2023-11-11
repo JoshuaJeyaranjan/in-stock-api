@@ -4,24 +4,25 @@ const knexConfig = require("../knexfile");
 const db = knex(knexConfig);
 
 exports.getAllInventories = async (req, res) => {
-  const searchTerm = req.query.s
+  const searchTerm = req.query.s;
   if (searchTerm) {
-    const inventoryResults = await db("inventories").join("warehouses", "inventories.warehouse_id", "=", "warehouses.id")
+    const inventoryResults = await db("inventories")
+      .join("warehouses", "inventories.warehouse_id", "=", "warehouses.id")
       .select(
         "warehouse_name",
         "item_name",
         "description",
         "category",
-        "status",
+        "status"
       )
       .whereILike("warehouses.warehouse_name", `%${searchTerm}%`)
       .orWhereILike("inventories.item_name", `%${searchTerm}%`)
-      .orWhereILike("inventories.category", `%${searchTerm}%`)
+      .orWhereILike("inventories.category", `%${searchTerm}%`);
 
     if (inventoryResults.length === 0) {
-      return res.sendStatus(204) //No content
+      return res.sendStatus(204); //No content
     } else {
-      return res.status(200).json(inventoryResults)
+      return res.status(200).json(inventoryResults);
     }
   } else {
     try {
@@ -54,7 +55,14 @@ exports.getInventoryItems = async (req, res) => {
     const { warehouseId } = req.params;
 
     const inventoryItems = await db("inventories")
-      .select("id", "item_name", "category", "status", "quantity", "warehouse_id")
+      .select(
+        "id",
+        "item_name",
+        "category",
+        "status",
+        "quantity",
+        "warehouse_id"
+      )
       .where({
         warehouse_id: warehouseId,
       });
@@ -80,6 +88,7 @@ exports.getInventoryItem = async (req, res) => {
       .select(
         "inventories.id",
         "warehouse_name",
+        "warehouse_id",
         "item_name",
         "description",
         "category",
@@ -94,6 +103,7 @@ exports.getInventoryItem = async (req, res) => {
     } else {
       const responseItem = {
         id: item.id,
+        warehouse_id: item.warehouse_id,
         warehouse_name: item.warehouse_name,
         item_name: item.item_name,
         description: item.description,
@@ -122,42 +132,52 @@ exports.createInventoryItem = async (req, res) => {
   }
 
   try {
-    const warehouse = await db("warehouses").where({ id: req.body.warehouse_id }).first()
+    const warehouse = await db("warehouses")
+      .where({ id: req.body.warehouse_id })
+      .first();
 
     if (!warehouse) {
-      return res.status(400).json({ message: "No warehouse found with that ID" })
+      return res
+        .status(400)
+        .json({ message: "No warehouse found with that ID" });
     }
 
-    const [itemId] = await db("inventories").insert(req.body)
+    const [itemId] = await db("inventories").insert(req.body);
+
     const item = await db("inventories")
-      .select('id', 'item_name', 'description', 'category', 'status', 'quantity')
-      .where({ id: itemId }).first()
+      .select(
+        "id",
+        "item_name",
+        "description",
+        "category",
+        "status",
+        "quantity"
+      )
+      .where({ id: itemId })
+      .first();
 
     if (item) {
-      return res.status(201).json(item)
+      return res.status(201).json(item);
     } else {
       return res.status(400).json({
-        message: "Error creating item, Invalid input"
-      })
+        message: "Error creating item, Invalid input",
+      });
     }
-
-
-
   } catch (err) {
-    return res.status(500).json(err)
+    return res.status(500).json(err);
   }
-
 };
 
 exports.updateInventoryItem = async (req, res) => {
   const { itemId } = req.params; //Stores item id in url
   if (req.body.status) {
-    if (req.body.status !== "Out of stock" && req.body.status !== "In stock") {
+    if (req.body.status !== "Out of stock" && req.body.status !== "In Stock") {
       return res.status(400).send({
         message: "Please ensure the status is in the correct format",
       });
     }
   }
+
   try {
     const rowsUpdated = await db("inventories")
       .where({ id: itemId })
@@ -184,15 +204,30 @@ exports.deleteInventoryItem = async (req, res) => {
 
   try {
     //returns number of deleted items
-    const deletedItems = await db("inventories").where({ id: itemId }).delete()
+    const deletedItems = await db("inventories").where({ id: itemId }).delete();
 
     if (deletedItems) {
-      return res.sendStatus(204)
+      return res.sendStatus(204);
     } else {
-      return res.status(404).json({ message: "Error, no item found with that id" })
+      return res
+        .status(404)
+        .json({ message: "Error, no item found with that id" });
     }
   } catch (err) {
-    return res.status(500).json({ error: err })
+    return res.status(500).json({ error: err });
   }
   //   return 204 if deleted
+};
+
+exports.getCategories = async (_req, res) => {
+  try {
+    const categories = await db
+      .distinct()
+      .from("inventories")
+      .pluck("category");
+
+    res.send(categories);
+  } catch (error) {
+    res.status(500).send({ message: "Couldn't fetch categories from table." });
+  }
 };

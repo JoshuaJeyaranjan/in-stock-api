@@ -69,6 +69,7 @@ exports.getWarehouse = async (req, res) => {
         "warehouse_name",
         "city",
         "country",
+        "address",
         "contact_name",
         "contact_position",
         "contact_phone",

@@ -6,6 +6,9 @@ const { isValidEmail, isValidPhone } = require("./validation");
 
 exports.getAllWarehouses = async (req, res) => {
   const searchTerm = req.query.s;
+  const order = req.query.order_by
+  const sort = req.query.sort_by
+  console.log(sort || 'asc')
 
   if (searchTerm) {
     try {
@@ -25,8 +28,8 @@ exports.getAllWarehouses = async (req, res) => {
         .orWhereILike("country", `%${searchTerm}%`)
         .orWhereILike("contact_name", `%${searchTerm}%`)
         .orWhereILike("contact_email", `%${searchTerm}%`)
-        .orWhereILike("contact_phone", `%${searchTerm}%`);
-
+        .orWhereILike("contact_phone", `%${searchTerm}%`)
+        .orderBy(`${order} || ""`, `${sort || 'asc'}`) //defaults to asc
       if (warehouseResults.length === 0) {
         return res.sendStatus(204); //No content
       } else {
@@ -37,7 +40,17 @@ exports.getAllWarehouses = async (req, res) => {
     }
   } else {
     try {
-      const warehouses = await db("warehouses");
+      const warehouses = await db("warehouses")
+        .select(
+          "id",
+          "warehouse_name",
+          "city",
+          "country",
+          "contact_name",
+          "contact_position",
+          "contact_email",
+          "contact_phone"
+        ).orderBy(`${order || 'id'}`, `${sort || 'asc'}`)
       res.status(200).json(warehouses);
     } catch (err) {
       res.status(400).send({ error: err });

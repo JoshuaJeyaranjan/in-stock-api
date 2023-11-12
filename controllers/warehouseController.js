@@ -8,7 +8,6 @@ exports.getAllWarehouses = async (req, res) => {
   const searchTerm = req.query.s;
   const order = req.query.order_by
   const sort = req.query.sort_by
-  console.log(sort || 'asc')
 
   if (searchTerm) {
     try {

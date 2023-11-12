@@ -18,6 +18,7 @@ exports.getAllWarehouses = async (req, res) => {
           "warehouse_name",
           "city",
           "country",
+          "address",
           "contact_name",
           "contact_position",
           "contact_email",
@@ -44,6 +45,7 @@ exports.getAllWarehouses = async (req, res) => {
         .select(
           "id",
           "warehouse_name",
+          "address",
           "city",
           "country",
           "contact_name",

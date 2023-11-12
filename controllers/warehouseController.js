@@ -29,7 +29,7 @@ exports.getAllWarehouses = async (req, res) => {
         .orWhereILike("contact_name", `%${searchTerm}%`)
         .orWhereILike("contact_email", `%${searchTerm}%`)
         .orWhereILike("contact_phone", `%${searchTerm}%`)
-        .orderBy(`${order} || ""`, `${sort || 'asc'}`) //defaults to asc
+        .orderBy(`${order || "id"}`, `${sort || 'asc'}`) //defaults to asc
       if (warehouseResults.length === 0) {
         return res.sendStatus(204); //No content
       } else {

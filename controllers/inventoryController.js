@@ -180,6 +180,10 @@ exports.updateInventoryItem = async (req, res) => {
         message: "Please ensure the status is in the correct format",
       });
     }
+
+    if (req.body.status === "Out of stock") {
+      req.body.quantity = 0;
+    }
   }
 
   try {
@@ -193,7 +197,17 @@ exports.updateInventoryItem = async (req, res) => {
         .json({ message: `Inventory item with ID ${itemId} not found` });
     }
 
-    const updatedData = await db("inventories").where({ id: itemId }).first();
+    const updatedData = await db("inventories")
+      .where({ id: itemId })
+      .select(
+        "id",
+        "warehouse_id",
+        "item_name",
+        "description",
+        "category",
+        "quantity"
+      )
+      .first();
 
     res.json(updatedData);
   } catch (error) {

@@ -8,7 +8,11 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch index"
+    "dev": "node --watch index",
+    "migrate": "knex migrate:latest",
+    "migrate:down": "knex migrate:down",
+    "rollback": "knex migrate:rollback",
+    "seed": "knex seed:run"
   },
   "name": "in-stock",
   "version": "1.0.0",

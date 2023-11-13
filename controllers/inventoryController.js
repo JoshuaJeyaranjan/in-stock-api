@@ -5,9 +5,8 @@ const db = knex(knexConfig);
 
 exports.getAllInventories = async (req, res) => {
   const searchTerm = req.query.s;
-  const order = req.query.order_by
-  const sort = req.query.sort_by
-
+  const order = req.query.order_by;
+  const sort = req.query.sort_by;
 
   if (searchTerm) {
     const inventoryResults = await db("inventories")
@@ -22,7 +21,7 @@ exports.getAllInventories = async (req, res) => {
       .whereILike("warehouses.warehouse_name", `%${searchTerm}%`)
       .orWhereILike("inventories.item_name", `%${searchTerm}%`)
       .orWhereILike("inventories.category", `%${searchTerm}%`)
-      .orderBy(`${order || "id"}`, `${sort || 'asc'}`) //defaults to asc
+      .orderBy(`${order || "id"}`, `${sort || "asc"}`); //defaults to asc
     if (inventoryResults.length === 0) {
       return res.sendStatus(204); //No content
     } else {
@@ -40,7 +39,8 @@ exports.getAllInventories = async (req, res) => {
           "inventories.status",
           "inventories.quantity",
           "warehouses.warehouse_name"
-        ).orderBy(`${order || "id"}`, `${sort || 'asc'}`) //defaults to asc
+        )
+        .orderBy(`${order || "id"}`, `${sort || "asc"}`); //defaults to asc
 
       if (inventories.length === 0) {
         return res.status(404).json({ message: "No inventories found" });

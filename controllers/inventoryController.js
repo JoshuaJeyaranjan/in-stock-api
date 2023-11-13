@@ -168,7 +168,7 @@ exports.createInventoryItem = async (req, res) => {
       });
     }
   } catch (err) {
-    return res.status(500).json(err);
+    return res.status(500).json({ message: "Error creating item", error: err });
   }
 };
 
@@ -184,6 +184,10 @@ exports.updateInventoryItem = async (req, res) => {
     if (req.body.status === "Out of stock") {
       req.body.quantity = 0;
     }
+
+    // if (req.body.quantity < 0) {
+    //   req.body.status = "Out of stock";
+    // }
   }
 
   try {

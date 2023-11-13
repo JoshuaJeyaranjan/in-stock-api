@@ -21,7 +21,7 @@ exports.getAllInventories = async (req, res) => {
       .whereILike("warehouses.warehouse_name", `%${searchTerm}%`)
       .orWhereILike("inventories.item_name", `%${searchTerm}%`)
       .orWhereILike("inventories.category", `%${searchTerm}%`)
-      .orderBy(`${order || "id"}`, `${sort || "asc"}`); //defaults to asc
+      .orderBy(`${order || "inventories.id"}`, `${sort || "asc"}`); //defaults to asc
     if (inventoryResults.length === 0) {
       return res.sendStatus(204); //No content
     } else {

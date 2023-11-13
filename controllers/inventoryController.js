@@ -185,7 +185,7 @@ exports.updateInventoryItem = async (req, res) => {
       req.body.quantity = 0;
     }
 
-    if (req.body.quantity < 0) {
+    if (req.body.quantity < 1) {
       req.body.status = "Out of stock";
     }
   }
